@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'shared/k_header.dart';
+import 'shared/k_drawer.dart';
 
 class WeatherReportScreen extends StatefulWidget {
   const WeatherReportScreen({super.key});
@@ -15,8 +16,7 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
-      ),
+      drawer: KDrawer(),
       body: Stack(
         children: [
           Column(

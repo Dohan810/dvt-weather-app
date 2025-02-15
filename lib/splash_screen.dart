@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'shared/k_header.dart';
+import 'shared/k_drawer.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,6 +12,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -31,6 +34,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: KDrawer(),
       body: Stack(
         children: [
           if (_controller.value.isInitialized)
@@ -73,6 +78,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ],
             ),
           ),
+          KHeader(scaffoldKey: _scaffoldKey),
         ],
       ),
     );
