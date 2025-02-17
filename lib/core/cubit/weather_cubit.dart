@@ -9,6 +9,7 @@ part 'weather_state.dart';
 class WeatherCubit extends Cubit<WeatherState> {
   final WeatherApi weatherApi;
   String unit = 'metric';
+  String selectedLocation = 'Current Location';
 
   WeatherCubit(this.weatherApi) : super(WeatherInitial());
 
@@ -27,5 +28,10 @@ class WeatherCubit extends Cubit<WeatherState> {
     unit = newUnit;
     emit(WeatherInitial()); // Reset state to trigger UI update
     fetchWeather(-26.086244, 27.960827); // Fetch weather with new unit
+  }
+
+  void setSelectedLocation(String location) {
+    selectedLocation = location;
+    emit(WeatherInitial()); // Reset state to trigger UI update
   }
 }
