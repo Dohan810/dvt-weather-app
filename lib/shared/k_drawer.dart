@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:weather_wise/core/api/weather_api.dart';
+import 'package:weather_wise/shared/utils/permissions_utils.dart';
 import 'k_option.dart';
 import 'k_row_options.dart';
 import 'k_button.dart';
+import '../core/database/database_helper.dart';
+import '../core/cubit/weather_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather_wise/core/service_locator.dart';
 
 class KDrawer extends StatefulWidget {
   const KDrawer({Key? key}) : super(key: key);
@@ -18,6 +24,7 @@ class _KDrawerState extends State<KDrawer> {
   String _selectedTimeInterval = '24 Hour';
   String _selectedScene = 'Forest Scene';
   String _selectedTheme = 'Light';
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -29,6 +36,25 @@ class _KDrawerState extends State<KDrawer> {
             _controller.play();
             _controller.setLooping(true);
           });
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final unit = await _databaseHelper.getUnit();
+    if (unit != null) {
+      setState(() {
+        _selectedUnit = unit;
+      });
+      final weatherCubit = getIt<WeatherCubit>();
+      weatherCubit.unit = unit == '°C' ? 'metric' : 'imperial';
+    }
+  }
+
+  Future<void> _saveUnit(String unit) async {
+    await _databaseHelper.saveUnit(unit);
+    final weatherCubit = getIt<WeatherCubit>();
+    weatherCubit.changeUnit(unit == '°C' ? 'metric' : 'imperial');
+    weatherCubit.fetchWeather(-26.086244, 27.960827);
   }
 
   @override
@@ -142,6 +168,7 @@ class _KDrawerState extends State<KDrawer> {
                           setState(() {
                             _selectedUnit = '°C';
                           });
+                          _saveUnit('°C');
                         },
                       ),
                     ),
@@ -154,6 +181,7 @@ class _KDrawerState extends State<KDrawer> {
                           setState(() {
                             _selectedUnit = '°F';
                           });
+                          _saveUnit('°F');
                         },
                       ),
                     ),

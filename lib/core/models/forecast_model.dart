@@ -14,7 +14,7 @@ class ForecastModel {
   factory ForecastModel.fromJson(Map<String, dynamic> json) {
     return ForecastModel(
       dateTime: DateTime.parse(json['dt_txt']),
-      temperature: json['main']['temp'],
+      temperature: json['main']['temp']?.toDouble(),
       main: json['weather'][0]['main'],
     );
   }

@@ -12,7 +12,7 @@ class WeatherModel {
   final String icon;
   final double windSpeed;
   final int windDeg;
-  final double windGust;
+  final double? windGust;
   final int clouds;
   final int visibility;
   final int dt;
@@ -33,7 +33,7 @@ class WeatherModel {
     required this.icon,
     required this.windSpeed,
     required this.windDeg,
-    required this.windGust,
+     this.windGust,
     required this.clouds,
     required this.visibility,
     required this.dt,
@@ -56,7 +56,7 @@ class WeatherModel {
       icon: json['weather'][0]['icon'],
       windSpeed: json['wind']['speed'],
       windDeg: json['wind']['deg'],
-      windGust: json['wind']['gust'],
+      windGust: json['wind']['gust']?.toDouble() ?? null,
       clouds: json['clouds']['all'],
       visibility: json['visibility'],
       dt: json['dt'],
