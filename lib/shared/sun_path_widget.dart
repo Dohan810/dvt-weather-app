@@ -21,7 +21,7 @@ class SunPathWidget extends StatelessWidget {
     final isNight = currentTime.isBefore(sunriseTime) || currentTime.isAfter(sunsetTime);
 
     return Container(
-      color: Colors.blueGrey,
+      color: Colors.blue,
       height: 200,
       child: Stack(
         children: [

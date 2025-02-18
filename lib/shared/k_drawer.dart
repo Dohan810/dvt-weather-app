@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:weather_wise/core/api/weather_api.dart';
+import 'package:weather_wise/main.dart';
 import 'package:weather_wise/shared/utils/permissions_utils.dart';
 import 'package:weather_wise/shared/utils/message_utils.dart';
 import 'dart:ui' as ui;
@@ -28,7 +30,6 @@ class KDrawer extends StatefulWidget {
 class _KDrawerState extends State<KDrawer> {
   late VideoPlayerController _controller;
   String _selectedUnit = '°C';
-  String _selectedTheme = 'Light';
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   final LocationApi _locationApi = LocationApi();
   List<Map<String, dynamic>> _savedLocations = [];
@@ -97,7 +98,6 @@ class _KDrawerState extends State<KDrawer> {
       final latLon = await _locationApi.getLatLonFromDisplayName(displayName);
       _weatherCubit.fetchWeather(latLon['lat']!, latLon['lon']!);
     }
-
   }
 
   Future<void> _saveScene(String scene) async {
@@ -108,18 +108,8 @@ class _KDrawerState extends State<KDrawer> {
     });
   }
 
-  Future<void> _saveTheme(String theme) async {
-    setState(() {
-      _selectedTheme = theme;
-    });
-    _weatherCubit.changeTheme(theme);
-  }
-
   Future<void> _shareWeather() async {
     try {
-      // Wait for a short duration to ensure the widget is painted
-      await Future.delayed(Duration(milliseconds: 100));
-
       RenderRepaintBoundary boundary =
           _cardKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage();
@@ -145,8 +135,9 @@ class _KDrawerState extends State<KDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: themeNotifier.isDarkMode ? Colors.grey[850] : Colors.white,
       child: Stack(
         children: [
           // I render this at the back of the drawer that i can reference it when sharing the weather
@@ -157,12 +148,12 @@ class _KDrawerState extends State<KDrawer> {
             children: [
               Expanded(
                 child: Container(
-                  color: Colors.white,
+                  color: themeNotifier.isDarkMode ? Colors.grey[850] : Colors.white,
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
                       Container(
-                        color: Colors.blueGrey,
+                        color: themeNotifier.isDarkMode ? Colors.black : Colors.blueGrey,
                         padding: EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,11 +182,9 @@ class _KDrawerState extends State<KDrawer> {
                           Expanded(
                             child: KOption(
                               text: 'Light',
-                              isSelected: _selectedTheme == 'Light',
+                              isSelected: !themeNotifier.isDarkMode,
                               onTap: () {
-                                setState(() {
-                                  _selectedTheme = 'Light';
-                                });
+                                themeNotifier.toggleTheme('Light');
                               },
                             ),
                           ),
@@ -203,11 +192,9 @@ class _KDrawerState extends State<KDrawer> {
                           Expanded(
                             child: KOption(
                               text: 'Dark',
-                              isSelected: _selectedTheme == 'Dark',
+                              isSelected: themeNotifier.isDarkMode,
                               onTap: () {
-                                setState(() {
-                                  _selectedTheme = 'Dark';
-                                });
+                                themeNotifier.toggleTheme('Dark');
                               },
                             ),
                           ),
@@ -226,17 +213,21 @@ class _KDrawerState extends State<KDrawer> {
                             },
                           ),
                           ..._savedLocations.map((location) {
-                            return KOption(
-                              text: location['display_name'],
-                              isSelected: _weatherCubit.selectedLocation ==
-                                  location['display_name'],
-                              onTap: () {
-                                _setActiveLocation(location['display_name']);
-                              },
-                              rightIcon: Icons.close,
-                              onRightIconPress: () {
-                                _deleteLocation(location['id']);
-                              },
+                            return Column(
+                              children: [
+                                SizedBox(height: 8),
+                                KOption(
+                                  text: location['display_name'],
+                                  isSelected: _weatherCubit.selectedLocation == location['display_name'],
+                                  onTap: () {
+                                    _setActiveLocation(location['display_name']);
+                                  },
+                                  rightIcon: Icons.close,
+                                  onRightIconPress: () {
+                                    _deleteLocation(location['id']);
+                                  },
+                                ),
+                              ],
                             );
                           }).toList(),
                         ],
@@ -279,8 +270,7 @@ class _KDrawerState extends State<KDrawer> {
                           Expanded(
                             child: KOption(
                               text: 'Forest Scene',
-                              isSelected:
-                                  _weatherCubit.selectedScene == 'Forest Scene',
+                              isSelected: _weatherCubit.selectedScene == 'Forest Scene',
                               onTap: () {
                                 _saveScene('Forest Scene');
                               },
@@ -299,36 +289,34 @@ class _KDrawerState extends State<KDrawer> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            child: KButton(
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16,vertical: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            KButton(
+                              mainAxisSize: MainAxisSize.max,
                               text: 'Share Weather',
                               onPressed: _shareWeather,
                               rightIcon: Icons.wechat,
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Container(
-                            alignment: Alignment.center,
-                            child: KButton(
+                            const SizedBox(height: 16),
+                            KButton(
+                              mainAxisSize: MainAxisSize.max,
                               text: 'Weather Detective',
                               onPressed: () {
                                 Navigator.pushNamed(context, '/detective');
                               },
                               rightIcon: Icons.keyboard_option_key,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              
             ],
           ),
         ],

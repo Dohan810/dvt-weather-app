@@ -173,11 +173,16 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                               ).toList()
                             ],
                           ),
-                        if (state is WeatherLoaded)
+                        if (state is WeatherLoaded) ...[
+                          SizedBox(height: 16,),
+                          Divider(color: Colors.grey,),
                           SunPathWidget(weatherData: state.weatherData),
-                        if (state is WeatherLoaded)
+                        ],
+                        if (state is WeatherLoaded) ...[
+                          SizedBox(height: 16,),
                           AdditionalDetailsWidget(
                               weatherData: state.weatherData),
+                        ],
                       ],
                     ),
                   ),

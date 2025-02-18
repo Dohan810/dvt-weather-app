@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:weather_wise/main.dart';
+import 'package:provider/provider.dart';
 
 class KOption extends StatelessWidget {
   final String text;
@@ -18,12 +20,14 @@ class KOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.grey.shade200,
+          color:  isSelected ? Colors.white : themeNotifier.isDarkMode ? Colors.grey.shade400 : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(

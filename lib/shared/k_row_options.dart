@@ -19,14 +19,14 @@ class KRowOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return ListTile(
       title: Text(title),
       subtitle: Container(
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
-          color: ColorExtension.fromHex(hexColor),
+          color: Theme.of(context).canvasColor,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade300),
         ),
         child: layoutType == LayoutType.row
             ? Row(

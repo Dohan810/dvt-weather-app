@@ -100,11 +100,11 @@ class _KHeaderState extends State<KHeader> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.menu, color: Colors.black),
+                  icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.primary),
                   onPressed: () {
                     widget.scaffoldKey.currentState?.openDrawer();
                   },
@@ -117,12 +117,15 @@ class _KHeaderState extends State<KHeader> {
                     _isSearchOpen ? MediaQuery.of(context).size.width * 0.6 : 0,
                 curve: Curves.easeInOut,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: _isSearchOpen
                     ? TextField(
                         controller: _searchController,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         decoration: InputDecoration(
                           hintText: 'Type Location',
                           border: InputBorder.none,
@@ -134,12 +137,12 @@ class _KHeaderState extends State<KHeader> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: IconButton(
                   icon: Icon(_isSearchOpen ? Icons.close : Icons.search,
-                      color: Colors.black),
+                      color: Theme.of(context).colorScheme.primary),
                   onPressed: () {
                     setState(() {
                       _isSearchOpen = !_isSearchOpen;
@@ -158,7 +161,7 @@ class _KHeaderState extends State<KHeader> {
               child: Container(
                 margin: const EdgeInsets.only(top: 8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
@@ -207,17 +210,17 @@ class _KHeaderState extends State<KHeader> {
                                 onTap: () => _onSuggestionTap(suggestion),
                                 trailing: PopupMenuButton<String>(
                                   onSelected: (value) {
-                                    if (value == 'set_active') {
-                                      _onSuggestionTap(suggestion);
-                                    } else if (value == 'save') {
+                                    // if (value == 'set_active') {
+                                    //   _onSuggestionTap(suggestion);
+                                    // } else if (value == 'save') {
                                       _saveLocation(suggestion['display_name']);
-                                    }
+                                    // }
                                   },
                                   itemBuilder: (context) => [
-                                    PopupMenuItem(
-                                      value: 'set_active',
-                                      child: Text('Set Active Location'),
-                                    ),
+                                    // PopupMenuItem(
+                                    //   value: 'set_active',
+                                    //   child: Text('Set Active Location'),
+                                    // ),
                                     PopupMenuItem(
                                       value: 'save',
                                       child: Text('Save Location'),
