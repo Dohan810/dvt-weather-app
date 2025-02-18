@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_wise/core/models/forecast_model.dart';
+import 'package:weather_wise/splash_screen.dart';
 import 'shared/k_header.dart';
 import 'shared/k_drawer.dart';
 import 'shared/sun_path_widget.dart';
@@ -77,6 +78,9 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
       body: BlocBuilder<WeatherCubit, WeatherState>(
         bloc: getIt<WeatherCubit>(),
         builder: (context, state) {
+          if (state is WeatherLoading || state is WeatherInitial)
+            return SplashScreen();
+
           return Stack(
             children: [
               ListView(
@@ -86,7 +90,9 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/images/weather/forest_cloudy.png'),
+                        image: AssetImage(
+                          'assets/images/weather/${_weatherCubit.selectedScene == 'Forest Scene' ? 'forest_' : 'sea_'}cloudy.png',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -110,8 +116,6 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                               color: Colors.white,
                             ),
                           ),
-                        if (state is WeatherLoading)
-                          CircularProgressIndicator(),
                         if (state is WeatherError)
                           Text(
                             state.message,
@@ -162,7 +166,8 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                                 (e) {
                                   return WeatherForecastTile(
                                     day: DateFormat('EEEE').format(e.dateTime),
-                                    temperature: '${_convertTemperature(e.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'}',
+                                    temperature:
+                                        '${_convertTemperature(e.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'}',
                                   );
                                 },
                               ).toList()
@@ -171,7 +176,8 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                         if (state is WeatherLoaded)
                           SunPathWidget(weatherData: state.weatherData),
                         if (state is WeatherLoaded)
-                          AdditionalDetailsWidget(weatherData: state.weatherData),
+                          AdditionalDetailsWidget(
+                              weatherData: state.weatherData),
                       ],
                     ),
                   ),
@@ -197,7 +203,9 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
 
     final List<ForecastModel> groupedForecast = [];
     groupedData.forEach((day, forecasts) {
-      final avgTemp = forecasts.map((f) => f.temperature).reduce((a, b) => a + b) / forecasts.length;
+      final avgTemp =
+          forecasts.map((f) => f.temperature).reduce((a, b) => a + b) /
+              forecasts.length;
       groupedForecast.add(ForecastModel(
         dateTime: DateTime.parse(day),
         temperature: avgTemp,

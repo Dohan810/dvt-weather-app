@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:weather_wise/core/api/location_api.dart';
+import 'package:weather_wise/core/cubit/weather_cubit.dart';
 import 'dart:async';
+
+import 'package:weather_wise/core/service_locator.dart';
 
 class KHeader extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -26,7 +29,8 @@ class _KHeaderState extends State<KHeader> {
         _isLoading = true;
       });
       if (_searchController.text.isNotEmpty) {
-        final suggestions = await _locationApi.getLocationSuggestions(_searchController.text);
+        final suggestions =
+            await _locationApi.getLocationSuggestions(_searchController.text);
         setState(() {
           _suggestions = suggestions;
           _isLoading = false;
@@ -40,7 +44,7 @@ class _KHeaderState extends State<KHeader> {
     });
   }
 
-  void _onSuggestionTap(Map<String, dynamic> suggestion) {
+  void _onSuggestionTap(Map<String, dynamic> suggestion) async {
     // Handle location selection
     print('Selected location: ${suggestion['display_name']}');
     setState(() {
@@ -48,6 +52,10 @@ class _KHeaderState extends State<KHeader> {
       _searchController.clear();
       _suggestions = [];
     });
+
+    final latLon =
+        await _locationApi.getLatLonFromDisplayName(suggestion['display_name']);
+    getIt<WeatherCubit>().fetchWeather(latLon['lat']!, latLon['lon']!);
   }
 
   Future<void> _saveLocation(String displayName) async {
@@ -105,7 +113,8 @@ class _KHeaderState extends State<KHeader> {
               AnimatedContainer(
                 alignment: Alignment.centerRight,
                 duration: Duration(milliseconds: 300),
-                width: _isSearchOpen ? MediaQuery.of(context).size.width * 0.6 : 0,
+                width:
+                    _isSearchOpen ? MediaQuery.of(context).size.width * 0.6 : 0,
                 curve: Curves.easeInOut,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -117,7 +126,8 @@ class _KHeaderState extends State<KHeader> {
                         decoration: InputDecoration(
                           hintText: 'Type Location',
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 16.0),
                         ),
                       )
                     : null,
@@ -128,7 +138,8 @@ class _KHeaderState extends State<KHeader> {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: IconButton(
-                  icon: Icon(_isSearchOpen ? Icons.close : Icons.search, color: Colors.black),
+                  icon: Icon(_isSearchOpen ? Icons.close : Icons.search,
+                      color: Colors.black),
                   onPressed: () {
                     setState(() {
                       _isSearchOpen = !_isSearchOpen;
@@ -142,7 +153,7 @@ class _KHeaderState extends State<KHeader> {
               ),
             ],
           ),
-          if (_isSearchOpen)
+          if (_isSearchOpen && _searchController.text.isNotEmpty)
             Expanded(
               child: Container(
                 margin: const EdgeInsets.only(top: 8.0),
@@ -157,37 +168,65 @@ class _KHeaderState extends State<KHeader> {
                     ),
                   ],
                 ),
-                child: _isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: _suggestions.length,
-                        itemBuilder: (context, index) {
-                          final suggestion = _suggestions[index];
-                          return ListTile(
-                            title: Text(suggestion['display_name']),
-                            onTap: () => _onSuggestionTap(suggestion),
-                            trailing: PopupMenuButton<String>(
-                              onSelected: (value) {
-                                if (value == 'set_active') {
-                                  _onSuggestionTap(suggestion);
-                                } else if (value == 'save') {
-                                  _saveLocation(suggestion['display_name']);
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 'set_active',
-                                  child: Text('Set Active Location'),
-                                ),
-                                PopupMenuItem(
-                                  value: 'save',
-                                  child: Text('Save Location'),
-                                ),
-                              ],
+                child: _suggestions.isEmpty && !_isLoading
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/gifs/no_results_found.gif',
+                              width: 140,
+                              height: 140,
                             ),
-                          );
-                        },
-                      ),
+                            Text(
+                              "Whoops, no results",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 16,
+                            )
+                          ],
+                        ),
+                      )
+                    : _isLoading
+                        ? Center(
+                            child: Image.asset(
+                            'assets/gifs/dancing_palm.gif',
+                            width: 180,
+                            height: 180,
+                          ))
+                        : ListView.builder(
+                            itemCount: _suggestions.length,
+                            itemBuilder: (context, index) {
+                              final suggestion = _suggestions[index];
+                              return ListTile(
+                                title: Text(suggestion['display_name']),
+                                onTap: () => _onSuggestionTap(suggestion),
+                                trailing: PopupMenuButton<String>(
+                                  onSelected: (value) {
+                                    if (value == 'set_active') {
+                                      _onSuggestionTap(suggestion);
+                                    } else if (value == 'save') {
+                                      _saveLocation(suggestion['display_name']);
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      value: 'set_active',
+                                      child: Text('Set Active Location'),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'save',
+                                      child: Text('Save Location'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
               ),
             ),
         ],

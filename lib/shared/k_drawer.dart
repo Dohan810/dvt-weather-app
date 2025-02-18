@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:video_player/video_player.dart';
 import 'package:weather_wise/core/api/weather_api.dart';
 import 'package:weather_wise/shared/utils/permissions_utils.dart';
+import 'package:weather_wise/shared/utils/message_utils.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'weather_report_card.dart';
 import 'k_option.dart';
 import 'k_row_options.dart';
 import 'k_button.dart';
 import '../core/database/database_helper.dart';
 import '../core/cubit/weather_cubit.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_wise/core/service_locator.dart';
 import 'package:weather_wise/core/api/location_api.dart';
 
@@ -21,13 +28,14 @@ class KDrawer extends StatefulWidget {
 class _KDrawerState extends State<KDrawer> {
   late VideoPlayerController _controller;
   String _selectedUnit = '°C';
-  String _selectedTimeInterval = '24 Hour';
-  String _selectedScene = 'Forest Scene';
   String _selectedTheme = 'Light';
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   final LocationApi _locationApi = LocationApi();
   List<Map<String, dynamic>> _savedLocations = [];
   late WeatherCubit _weatherCubit;
+  final GlobalKey _cardKey = GlobalKey();
+  String title = getGreetingMessage();
+  String quote = getQuote();
 
   @override
   void initState() {
@@ -40,6 +48,7 @@ class _KDrawerState extends State<KDrawer> {
             _controller.setLooping(true);
           });
     _weatherCubit = getIt<WeatherCubit>();
+
     _loadSettings();
     _loadSavedLocations();
   }
@@ -74,6 +83,8 @@ class _KDrawerState extends State<KDrawer> {
 
   Future<void> _setActiveLocation(String displayName) async {
     _weatherCubit.setSelectedLocation(displayName);
+    setState(() {});
+
     // Fetch weather for the selected location
     if (displayName == 'Current Location') {
       final position = await PermissionsUtils.getCurrentLocation();
@@ -87,9 +98,43 @@ class _KDrawerState extends State<KDrawer> {
       _weatherCubit.fetchWeather(latLon['lat']!, latLon['lon']!);
     }
 
+  }
+
+  Future<void> _saveScene(String scene) async {
+    _weatherCubit.changeScene(scene);
+
     setState(() {
-      
+      _weatherCubit.selectedScene = scene;
     });
+  }
+
+  Future<void> _saveTheme(String theme) async {
+    setState(() {
+      _selectedTheme = theme;
+    });
+    _weatherCubit.changeTheme(theme);
+  }
+
+  Future<void> _shareWeather() async {
+    try {
+      // Wait for a short duration to ensure the widget is painted
+      await Future.delayed(Duration(milliseconds: 100));
+
+      RenderRepaintBoundary boundary =
+          _cardKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage();
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      final tempDir = await getTemporaryDirectory();
+      final file = await File('${tempDir.path}/weather.png').create();
+      await file.writeAsBytes(pngBytes);
+
+      Share.shareXFiles([XFile(file.path)], text: 'Check out the weather!');
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   @override
@@ -101,217 +146,191 @@ class _KDrawerState extends State<KDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
+      backgroundColor: Colors.white,
+      child: Stack(
         children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                Container(
-                  color: Colors.blueGrey,
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Good Morning',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
+          // I render this at the back of the drawer that i can reference it when sharing the weather
+          WeatherReportCard(cardKey: _cardKey,),
+
+          // Main content
+          Column(
+            children: [
+              Expanded(
+                child: Container(
+                  color: Colors.white,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      Container(
+                        color: Colors.blueGrey,
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                              ),
+                            ),
+                            Text(
+                              quote,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        'Cloudy morning will give way to afternoon sun',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
+                      KRowOptions(
+                        title: 'Themes',
+                        layoutType: LayoutType.row,
+                        children: [
+                          Expanded(
+                            child: KOption(
+                              text: 'Light',
+                              isSelected: _selectedTheme == 'Light',
+                              onTap: () {
+                                setState(() {
+                                  _selectedTheme = 'Light';
+                                });
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: KOption(
+                              text: 'Dark',
+                              isSelected: _selectedTheme == 'Dark',
+                              onTap: () {
+                                setState(() {
+                                  _selectedTheme = 'Dark';
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      KRowOptions(
+                        title: 'Saved Locations',
+                        layoutType: LayoutType.column,
+                        children: [
+                          KOption(
+                            text: 'Current Location',
+                            isSelected:
+                                _weatherCubit.selectedLocation == 'Current Location',
+                            onTap: () {
+                              _setActiveLocation('Current Location');
+                            },
+                          ),
+                          ..._savedLocations.map((location) {
+                            return KOption(
+                              text: location['display_name'],
+                              isSelected: _weatherCubit.selectedLocation ==
+                                  location['display_name'],
+                              onTap: () {
+                                _setActiveLocation(location['display_name']);
+                              },
+                              rightIcon: Icons.close,
+                              onRightIconPress: () {
+                                _deleteLocation(location['id']);
+                              },
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                      KRowOptions(
+                        title: 'Units',
+                        layoutType: LayoutType.row,
+                        children: [
+                          Expanded(
+                            child: KOption(
+                              text: '°C',
+                              isSelected: _selectedUnit == '°C',
+                              onTap: () {
+                                setState(() {
+                                  _selectedUnit = '°C';
+                                });
+                                _saveUnit('°C');
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: KOption(
+                              text: '°F',
+                              isSelected: _selectedUnit == '°F',
+                              onTap: () {
+                                setState(() {
+                                  _selectedUnit = '°F';
+                                });
+                                _saveUnit('°F');
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      KRowOptions(
+                        title: 'Scene Select',
+                        layoutType: LayoutType.row,
+                        children: [
+                          Expanded(
+                            child: KOption(
+                              text: 'Forest Scene',
+                              isSelected:
+                                  _weatherCubit.selectedScene == 'Forest Scene',
+                              onTap: () {
+                                _saveScene('Forest Scene');
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: KOption(
+                              text: 'Sea Scene',
+                              isSelected: _weatherCubit.selectedScene == 'Sea Scene',
+                              onTap: () {
+                                _saveScene('Sea Scene');
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            child: KButton(
+                              text: 'Share Weather',
+                              onPressed: _shareWeather,
+                              rightIcon: Icons.wechat,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            alignment: Alignment.center,
+                            child: KButton(
+                              text: 'Weather Detective',
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/detective');
+                              },
+                              rightIcon: Icons.keyboard_option_key,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                KRowOptions(
-                  title: 'Themes',
-                  layoutType: LayoutType.row,
-                  children: [
-                    Expanded(
-                      child: KOption(
-                        text: 'Light',
-                        isSelected: _selectedTheme == 'Light',
-                        onTap: () {
-                          setState(() {
-                            _selectedTheme = 'Light';
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: KOption(
-                        text: 'Dark',
-                        isSelected: _selectedTheme == 'Dark',
-                        onTap: () {
-                          setState(() {
-                            _selectedTheme = 'Dark';
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                KRowOptions(
-                  title: 'Saved Locations',
-                  layoutType: LayoutType.column,
-                  children: [
-                    KOption(
-                      text: 'Current Location',
-                      isSelected: _weatherCubit.selectedLocation == 'Current Location',
-                      onTap: () {
-                        _setActiveLocation('Current Location');
-                      },
-                    ),
-                    ..._savedLocations.map((location) {
-                      return KOption(
-                        text: location['display_name'],
-                        isSelected: _weatherCubit.selectedLocation == location['display_name'],
-                        onTap: () {
-                          _setActiveLocation(location['display_name']);
-                        },
-                        rightIcon: Icons.close,
-                        onRightIconPress: () {
-                          _deleteLocation(location['id']);
-                        },
-                      );
-                    }).toList(),
-                  ],
-                ),
-                KRowOptions(
-                  title: 'Units',
-                  layoutType: LayoutType.row,
-                  children: [
-                    Expanded(
-                      child: KOption(
-                        text: '°C',
-                        isSelected: _selectedUnit == '°C',
-                        onTap: () {
-                          setState(() {
-                            _selectedUnit = '°C';
-                          });
-                          _saveUnit('°C');
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: KOption(
-                        text: '°F',
-                        isSelected: _selectedUnit == '°F',
-                        onTap: () {
-                          setState(() {
-                            _selectedUnit = '°F';
-                          });
-                          _saveUnit('°F');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                KRowOptions(
-                  title: 'Time Intervals',
-                  layoutType: LayoutType.row,
-                  children: [
-                    Expanded(
-                      child: KOption(
-                        text: '24 Hour',
-                        isSelected: _selectedTimeInterval == '24 Hour',
-                        onTap: () {
-                          setState(() {
-                            _selectedTimeInterval = '24 Hour';
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: KOption(
-                        text: '12 Hour',
-                        isSelected: _selectedTimeInterval == '12 Hour',
-                        onTap: () {
-                          setState(() {
-                            _selectedTimeInterval = '12 Hour';
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                KRowOptions(
-                  title: 'Scene Select',
-                  layoutType: LayoutType.row,
-                  children: [
-                    Expanded(
-                      child: KOption(
-                        text: 'Forest Scene',
-                        isSelected: _selectedScene == 'Forest Scene',
-                        onTap: () {
-                          setState(() {
-                            _selectedScene = 'Forest Scene';
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: KOption(
-                        text: 'Sea Scene',
-                        isSelected: _selectedScene == 'Sea Scene',
-                        onTap: () {
-                          setState(() {
-                            _selectedScene = 'Sea Scene';
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16),
+              
+            ],
           ),
-          const SizedBox(height: 16),
-          Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: KButton(
-              text: 'Share Weather',
-              onPressed: () {
-              },
-              rightIcon: Icons.send,
-            ),
-          ),
-          // if (_controller.value.isInitialized)
-          //   Container(
-          //     height: 200, 
-          //     child: Stack(
-          //       children: [
-          //         Positioned(
-          //           left: -10,
-          //           bottom: 10,
-          //           child: Container(
-          //             width: 400,
-          //             height: 100, 
-          //             child: FittedBox(
-          //               fit: BoxFit.cover,
-          //               child: SizedBox(
-          //                 width: _controller.value.size.width * 0.5,
-          //                 height: _controller.value.size.height* 0.5,
-          //                 child: VideoPlayer(_controller),
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
         ],
       ),
     );
