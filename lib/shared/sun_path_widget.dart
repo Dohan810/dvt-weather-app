@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:weather_wise/weather_report.dart';
 import '../core/models/weather_model.dart';
 
 class SunPathWidget extends StatelessWidget {
@@ -21,7 +22,7 @@ class SunPathWidget extends StatelessWidget {
     final isNight = currentTime.isBefore(sunriseTime) || currentTime.isAfter(sunsetTime);
 
     return Container(
-      color: Colors.blue,
+      color: getBackgroundColor(),
       height: 200,
       child: Stack(
         children: [

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:weather_wise/shared/utils/color_extensions.dart';
+import 'package:weather_wise/core/database/database_helper.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,6 +12,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -20,6 +23,18 @@ class _SplashScreenState extends State<SplashScreen> {
         _controller.play();
         _controller.setLooping(true);
       });
+
+    _checkCoinPageViewed();
+  }
+
+  Future<void> _checkCoinPageViewed() async {
+    final coinPageViewed = await _databaseHelper.isCoinPageViewed();
+
+    if (coinPageViewed) {
+      Navigator.pushReplacementNamed(context, '/report');
+    } else {
+      Navigator.pushReplacementNamed(context, '/coin');
+    }
   }
 
   @override
@@ -31,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorExtension.fromHex("#fff8ed"),
       body: Stack(
         children: [
           if (_controller.value.isInitialized)

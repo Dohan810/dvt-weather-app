@@ -29,7 +29,6 @@ class WeatherCubit extends Cubit<WeatherState> {
   void changeUnit(String newUnit) {
     unit = newUnit;
     emit(WeatherInitial()); // Reset state to trigger UI update
-    fetchWeather(-26.086244, 27.960827); // Fetch weather with new unit
   }
 
   void setSelectedLocation(String location) {

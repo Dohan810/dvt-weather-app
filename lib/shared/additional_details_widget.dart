@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_wise/weather_report.dart';
 import '../core/models/weather_model.dart';
 
 class AdditionalDetailsWidget extends StatelessWidget {
@@ -11,7 +12,7 @@ class AdditionalDetailsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: getBackgroundColor(),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -73,7 +74,7 @@ class AdditionalDetailsWidget extends StatelessWidget {
       height: 60,
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Colors.blue.shade700,
+        color: Colors.yellow.withOpacity(0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(

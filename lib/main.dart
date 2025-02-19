@@ -30,9 +30,11 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: SafeArea(child: const WeatherReportScreen()),
+      home: SafeArea(child: const SplashScreen()),
       routes: {
-        '/detective': (context) => WeatherDetectiveScreen(),
+        '/detective': (context) => SafeArea(child: WeatherDetectiveScreen()),
+        '/report': (context) => SafeArea(child: WeatherReportScreen()),
+        '/coin': (context) => SafeArea(child: CoinScreen()),
       },
     );
   }

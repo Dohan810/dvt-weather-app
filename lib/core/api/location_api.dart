@@ -1,15 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:geolocator/geolocator.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class LocationApi {
-  static const String _baseUrl = 'https://nominatim.openstreetmap.org/search.php';
+  static const String _baseUrl =
+      'https://nominatim.openstreetmap.org/search.php';
 
-  Future<List<Map<String, dynamic>>> getLocationSuggestions(String query) async {
+  Future<List<Map<String, dynamic>>> getLocationSuggestions(
+      String query) async {
     final client = HttpClient();
     try {
-      final request = await client.getUrl(Uri.parse('$_baseUrl?q=$query&polygon_geojson=1&format=jsonv2'));
+      final request = await client.getUrl(
+          Uri.parse('$_baseUrl?q=$query&polygon_geojson=1&format=jsonv2'));
       final response = await request.close();
       if (response.statusCode == 200) {
         final responseBody = await response.transform(utf8.decoder).join();
@@ -46,7 +50,16 @@ class LocationApi {
     await db.delete('locations', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<Map<String, double>> getLatLonFromDisplayName(String displayName) async {
+  Future<Map<String, double>> getLatLonFromDisplayName(
+      String displayName) async {
+    if (displayName == "Current Location") {
+      Position? l = await Geolocator.getLastKnownPosition();
+      return {
+        'lat': l!.latitude,
+        'lon': l!.longitude,
+      };
+    }
+
     final suggestions = await getLocationSuggestions(displayName);
     if (suggestions.isNotEmpty) {
       final suggestion = suggestions.first;

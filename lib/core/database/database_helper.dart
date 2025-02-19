@@ -21,12 +21,13 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'weather_app.db');
     return await openDatabase(
       path,
-      version: 2, // Increment the version to trigger onUpgrade
+      version: 3, // Increment the version to trigger onUpgrade
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE settings (
             id INTEGER PRIMARY KEY,
-            unit TEXT
+            key TEXT,
+            value TEXT
           )
         ''');
         await db.execute('''
@@ -37,6 +38,14 @@ class DatabaseHelper {
         ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 3) {
+          await db.execute('''
+            ALTER TABLE settings ADD COLUMN key TEXT
+          ''');
+          await db.execute('''
+            ALTER TABLE settings ADD COLUMN value TEXT
+          ''');
+        }
         if (oldVersion < 2) {
           await db.execute('''
             CREATE TABLE IF NOT EXISTS locations (
@@ -51,10 +60,9 @@ class DatabaseHelper {
 
   Future<void> saveUnit(String unit) async {
     final db = await database;
-    await db.delete('settings'); // Clear previous settings
     await db.insert(
       'settings',
-      {'unit': unit},
+      {'key': 'unit', 'value': unit},
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
@@ -64,10 +72,33 @@ class DatabaseHelper {
 
   Future<String?> getUnit() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('settings');
+    final List<Map<String, dynamic>> maps = await db.query('settings', where: 'key = ?', whereArgs: ['unit']);
     if (maps.isNotEmpty) {
-      return maps.first['unit'] as String?;
+      return maps.first['value'] as String?;
     }
     return null;
+  }
+
+  Future<void> insertOrUpdate(String table, Map<String, dynamic> data) async {
+    final db = await database;
+    await db.insert(
+      table,
+      data,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> query(String table, {String? where, List<dynamic>? whereArgs}) async {
+    final db = await database;
+    return await db.query(table, where: where, whereArgs: whereArgs);
+  }
+
+  Future<void> setCoinPageViewed() async {
+    await insertOrUpdate('settings', {'key': 'coinPageViewed', 'value': 'true'});
+  }
+
+  Future<bool> isCoinPageViewed() async {
+    final result = await query('settings', where: 'key = ?', whereArgs: ['coinPageViewed']);
+    return result.isNotEmpty && result.first['value'] == 'true';
   }
 }

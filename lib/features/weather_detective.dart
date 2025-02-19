@@ -98,11 +98,11 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
                   ),
                   SizedBox(height: 16),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: 300,
                         child: Text(
-                          "Weather Detective",
+                          "Weather\nDetective",
                           style: TextStyle(fontSize: 40, height: 1.1),
                         ),
                       ),
@@ -165,7 +165,7 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
                       _buildWeatherOption(_displayOptions[3]),
                     ],
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                 ],
               ),
             ),

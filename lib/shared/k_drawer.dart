@@ -29,7 +29,6 @@ class KDrawer extends StatefulWidget {
 
 class _KDrawerState extends State<KDrawer> {
   late VideoPlayerController _controller;
-  String _selectedUnit = '°C';
   final DatabaseHelper _databaseHelper = DatabaseHelper();
   final LocationApi _locationApi = LocationApi();
   List<Map<String, dynamic>> _savedLocations = [];
@@ -50,24 +49,18 @@ class _KDrawerState extends State<KDrawer> {
           });
     _weatherCubit = getIt<WeatherCubit>();
 
-    _loadSettings();
     _loadSavedLocations();
-  }
-
-  Future<void> _loadSettings() async {
-    final unit = await _databaseHelper.getUnit();
-    if (unit != null) {
-      setState(() {
-        _selectedUnit = unit;
-      });
-      _weatherCubit.unit = unit == '°C' ? 'metric' : 'imperial';
-    }
   }
 
   Future<void> _saveUnit(String unit) async {
     await _databaseHelper.saveUnit(unit);
     _weatherCubit.changeUnit(unit == '°C' ? 'metric' : 'imperial');
-    _weatherCubit.fetchWeather(-26.086244, 27.960827);
+    setState(() {});
+
+    final latLon = await _locationApi
+        .getLatLonFromDisplayName(_weatherCubit.selectedLocation);
+    _weatherCubit.fetchWeather(latLon['lat']!, latLon['lon']!);
+
   }
 
   Future<void> _loadSavedLocations() async {
@@ -110,7 +103,6 @@ class _KDrawerState extends State<KDrawer> {
 
   Future<void> _shareWeather() async {
     try {
-      
       RenderRepaintBoundary boundary =
           _cardKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage();
@@ -138,23 +130,30 @@ class _KDrawerState extends State<KDrawer> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Drawer(
-      backgroundColor: themeNotifier.isDarkMode ? Colors.grey[850] : Colors.white,
+      backgroundColor:
+          themeNotifier.isDarkMode ? Colors.grey[850] : Colors.white,
       child: Stack(
         children: [
           // I render this at the back of the drawer that i can reference it when sharing the weather
-          WeatherReportCard(cardKey: _cardKey,),
+          WeatherReportCard(
+            cardKey: _cardKey,
+          ),
 
           // Main content
           Column(
             children: [
               Expanded(
                 child: Container(
-                  color: themeNotifier.isDarkMode ? Colors.grey[850] : Colors.white,
+                  color: themeNotifier.isDarkMode
+                      ? Colors.grey[850]
+                      : Colors.white,
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
                       Container(
-                        color: themeNotifier.isDarkMode ? Colors.black : Colors.blueGrey,
+                        color: themeNotifier.isDarkMode
+                            ? Colors.black
+                            : Colors.blueGrey,
                         padding: EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,8 +206,8 @@ class _KDrawerState extends State<KDrawer> {
                         children: [
                           KOption(
                             text: 'Current Location',
-                            isSelected:
-                                _weatherCubit.selectedLocation == 'Current Location',
+                            isSelected: _weatherCubit.selectedLocation ==
+                                'Current Location',
                             onTap: () {
                               _setActiveLocation('Current Location');
                             },
@@ -219,9 +218,11 @@ class _KDrawerState extends State<KDrawer> {
                                 SizedBox(height: 8),
                                 KOption(
                                   text: location['display_name'],
-                                  isSelected: _weatherCubit.selectedLocation == location['display_name'],
+                                  isSelected: _weatherCubit.selectedLocation ==
+                                      location['display_name'],
                                   onTap: () {
-                                    _setActiveLocation(location['display_name']);
+                                    _setActiveLocation(
+                                        location['display_name']);
                                   },
                                   rightIcon: Icons.close,
                                   onRightIconPress: () {
@@ -240,11 +241,8 @@ class _KDrawerState extends State<KDrawer> {
                           Expanded(
                             child: KOption(
                               text: '°C',
-                              isSelected: _selectedUnit == '°C',
+                              isSelected: _weatherCubit.unit == 'metric',
                               onTap: () {
-                                setState(() {
-                                  _selectedUnit = '°C';
-                                });
                                 _saveUnit('°C');
                               },
                             ),
@@ -253,11 +251,8 @@ class _KDrawerState extends State<KDrawer> {
                           Expanded(
                             child: KOption(
                               text: '°F',
-                              isSelected: _selectedUnit == '°F',
+                              isSelected: _weatherCubit.unit == 'imperial',
                               onTap: () {
-                                setState(() {
-                                  _selectedUnit = '°F';
-                                });
                                 _saveUnit('°F');
                               },
                             ),
@@ -271,7 +266,8 @@ class _KDrawerState extends State<KDrawer> {
                           Expanded(
                             child: KOption(
                               text: 'Forest Scene',
-                              isSelected: _weatherCubit.selectedScene == 'Forest Scene',
+                              isSelected:
+                                  _weatherCubit.selectedScene == 'Forest Scene',
                               onTap: () {
                                 _saveScene('Forest Scene');
                               },
@@ -281,7 +277,8 @@ class _KDrawerState extends State<KDrawer> {
                           Expanded(
                             child: KOption(
                               text: 'Sea Scene',
-                              isSelected: _weatherCubit.selectedScene == 'Sea Scene',
+                              isSelected:
+                                  _weatherCubit.selectedScene == 'Sea Scene',
                               onTap: () {
                                 _saveScene('Sea Scene');
                               },
@@ -291,7 +288,8 @@ class _KDrawerState extends State<KDrawer> {
                       ),
                       const SizedBox(height: 16),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16,vertical: 12),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

@@ -56,7 +56,6 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
     final unit = await _databaseHelper.getUnit();
     if (unit != null) {
       setState(() {
-        _weatherCubit.unit = unit == '°C' ? 'metric' : 'imperial';
       });
     }
   }
@@ -64,6 +63,8 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
   double _convertTemperature(double kelvin) {
     return kelvin;
   }
+
+ 
 
   @override
   void dispose() {
@@ -88,14 +89,17 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                         Container(
                           height: MediaQuery.of(context).size.height * 0.4,
                           width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                'assets/images/weather/${_weatherCubit.selectedScene == 'Forest Scene' ? 'forest_' : 'sea_'}cloudy.png',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                          decoration: state is WeatherLoaded
+                              ? BoxDecoration(
+                                  color: getBackgroundColor(),
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/weather/${getBackgroundAsset()}',
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : null,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -128,7 +132,9 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                           ),
                         ),
                         Container(
-                          color: Colors.blue,
+                          color: state is WeatherLoaded
+                              ? getBackgroundColor()
+                              : Colors.blue,
                           child: Column(
                             children: [
                               if (state is WeatherLoaded)
@@ -181,9 +187,7 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
                                 SizedBox(
                                   height: 16,
                                 ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
+                              Divider(color: Colors.white),
                                 SunPathWidget(weatherData: state.weatherData),
                               ],
                               if (state is WeatherLoaded) ...[
@@ -276,4 +280,47 @@ class WeatherForecastTile extends StatelessWidget {
       ),
     );
   }
+}
+
+
+Color getBackgroundColor() {
+  final weatherCondition = getIt<WeatherCubit>().state is WeatherLoaded
+      ? (getIt<WeatherCubit>().state as WeatherLoaded).weatherData.main
+      : '';
+  switch (weatherCondition.toLowerCase()) {
+    case 'rain':
+      return Color(0xFF57575D);
+    case 'clouds':
+      return Color(0xFF54717A);
+    case 'clear':
+      return Color(0xFF47AB2F);
+    default:
+      return Colors.blue;
+  }
+}
+
+String getBackgroundAsset() {
+  final weatherCondition = getIt<WeatherCubit>().state is WeatherLoaded
+      ? (getIt<WeatherCubit>().state as WeatherLoaded).weatherData.main
+      : '';
+  String prefix = getIt<WeatherCubit>().selectedScene == 'Forest Scene' ? 'forest_' : 'sea_';
+  switch (weatherCondition.toLowerCase()) {
+    case 'rain':
+      return "${prefix}rainy.png";
+    case 'clouds':
+      return "${prefix}cloudy.png";
+    case 'clear':
+      return "${prefix}sunny.png";
+    default:
+      return "${prefix}sunny.png";
+  }
+}
+
+
+String getWeatherState() {
+  final weatherCondition = getIt<WeatherCubit>().state is WeatherLoaded
+      ? (getIt<WeatherCubit>().state as WeatherLoaded).weatherData.main
+      : '';
+
+      return weatherCondition;
 }
