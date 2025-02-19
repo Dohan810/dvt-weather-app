@@ -83,9 +83,9 @@ To set up the project, ensure that the versions of Flutter and Dart are as menti
 
 ## Generated APK
 
-The generated APK can be found in the `build/app/outputs/flutter-apk` directory after running the build command:
+The generated APK can be found in this link:
 ```bash
-flutter build apk
+https://1drv.ms/u/c/bdc16899e0777466/EbKgqF3IPp1Dg8jsgScXTNoBIeK1pnz3ENNm6fQgvUryUg?e=jCtt2F
 ```
 
 ## Key Dependencies
