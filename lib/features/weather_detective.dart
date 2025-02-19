@@ -45,7 +45,7 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double percentage = _score > 0 ? (_score / _totalAttempts) * 100 : 0;
+    int percentage = (_score > 0 ? (_score / _totalAttempts) * 100 : 0).toInt();
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -54,14 +54,14 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
               left: MediaQuery.sizeOf(context).width / 1.5,
               top: -0,
               child: Opacity(
-                opacity: 0.3,
+                opacity:0.6,
                 child: Text(
                   percentage > 0 ? "${percentage}%" : "Weather",
                   style: TextStyle(
                       fontSize: 68,
                       fontWeight: FontWeight.bold,
                       color: percentage == 0
-                          ? Colors.black26
+                          ? Theme.of(context).canvasColor
                           : percentage > 50
                               ? Colors.green
                               : Colors.red),
@@ -132,7 +132,7 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(500)),
-                              color: ColorExtension.fromHex("#D9E2EB"),
+                              color: Theme.of(context).canvasColor,
                             ),
                             child: Icon(
                               _correctOption['icon'],
@@ -182,7 +182,7 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
         child: Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).canvasColor,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.black),
           ),

@@ -11,7 +11,7 @@ const Color lightButtonColor = Color(0xFF4A90E2);
 
 // Dark theme colors
 const Color darkPrimaryColor = Color.fromARGB(255, 228, 228, 228);
-const Color darkSecondaryColor = Color(0xFF4A90E2);
+const Color darkSecondaryColor = Color.fromARGB(255, 255, 255, 255);
 const Color darkBackgroundColor = Color(0xFF292F33);
 const Color darkScaffoldBackgroundColor = Color(0xFF2B3151);
 const Color darkCardColor = Color(0xFF3A3A3A);

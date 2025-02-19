@@ -110,6 +110,7 @@ class _KDrawerState extends State<KDrawer> {
 
   Future<void> _shareWeather() async {
     try {
+      
       RenderRepaintBoundary boundary =
           _cardKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage();
@@ -297,7 +298,7 @@ class _KDrawerState extends State<KDrawer> {
                             KButton(
                               mainAxisSize: MainAxisSize.max,
                               text: 'Share Weather',
-                              onPressed: _shareWeather,
+                              onPressAsync: _shareWeather,
                               rightIcon: Icons.wechat,
                             ),
                             const SizedBox(height: 16),

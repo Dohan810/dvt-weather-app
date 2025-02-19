@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_wise/core/models/forecast_model.dart';
+import 'package:weather_wise/loading_screen.dart';
 import 'package:weather_wise/splash_screen.dart';
 import 'shared/k_header.dart';
 import 'shared/k_drawer.dart';
@@ -78,116 +79,125 @@ class _WeatherReportScreenState extends State<WeatherReportScreen> {
       body: BlocBuilder<WeatherCubit, WeatherState>(
         bloc: getIt<WeatherCubit>(),
         builder: (context, state) {
-          if (state is WeatherLoading || state is WeatherInitial)
-            return SplashScreen();
-
           return Stack(
             children: [
-              ListView(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                          'assets/images/weather/${_weatherCubit.selectedScene == 'Forest Scene' ? 'forest_' : 'sea_'}cloudy.png',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+              state is WeatherLoading || state is WeatherInitial
+                  ? LoadingScreen()
+                  : ListView(
                       children: [
-                        if (state is WeatherLoaded)
-                          Text(
-                            '${_convertTemperature(state.weatherData.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'}',
-                            style: TextStyle(
-                              fontSize: 72,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                'assets/images/weather/${_weatherCubit.selectedScene == 'Forest Scene' ? 'forest_' : 'sea_'}cloudy.png',
+                              ),
+                              fit: BoxFit.cover,
                             ),
                           ),
-                        if (state is WeatherLoaded)
-                          Text(
-                            state.weatherData.main,
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
-                            ),
-                          ),
-                        if (state is WeatherError)
-                          Text(
-                            state.message,
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.red,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    color: Colors.blue,
-                    child: Column(
-                      children: [
-                        if (state is WeatherLoaded)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text(
-                                  '${_convertTemperature(state.weatherData.tempMin).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'} min',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  '${_convertTemperature(state.weatherData.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'} Current',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  '${_convertTemperature(state.weatherData.tempMax).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'} max',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        Divider(color: Colors.white),
-                        if (state is WeatherLoaded)
-                          Column(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ..._groupForecastByDay(state.forecastData).map(
-                                (e) {
-                                  return WeatherForecastTile(
-                                    day: DateFormat('EEEE').format(e.dateTime),
-                                    temperature:
-                                        '${_convertTemperature(e.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'}',
-                                  );
-                                },
-                              ).toList()
+                              if (state is WeatherLoaded)
+                                Text(
+                                  '${_convertTemperature(state.weatherData.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'}',
+                                  style: TextStyle(
+                                    fontSize: 72,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              if (state is WeatherLoaded)
+                                Text(
+                                  state.weatherData.main,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              if (state is WeatherError)
+                                Text(
+                                  state.message,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.red,
+                                  ),
+                                ),
                             ],
                           ),
-                        if (state is WeatherLoaded) ...[
-                          SizedBox(height: 16,),
-                          Divider(color: Colors.grey,),
-                          SunPathWidget(weatherData: state.weatherData),
-                        ],
-                        if (state is WeatherLoaded) ...[
-                          SizedBox(height: 16,),
-                          AdditionalDetailsWidget(
-                              weatherData: state.weatherData),
-                        ],
+                        ),
+                        Container(
+                          color: Colors.blue,
+                          child: Column(
+                            children: [
+                              if (state is WeatherLoaded)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text(
+                                        '${_convertTemperature(state.weatherData.tempMin).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'} min',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${_convertTemperature(state.weatherData.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'} Current',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${_convertTemperature(state.weatherData.tempMax).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'} max',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              Divider(color: Colors.white),
+                              if (state is WeatherLoaded)
+                                Column(
+                                  children: [
+                                    ..._groupForecastByDay(state.forecastData)
+                                        .map(
+                                      (e) {
+                                        return WeatherForecastTile(
+                                          day: DateFormat('EEEE')
+                                              .format(e.dateTime),
+                                          temperature:
+                                              '${_convertTemperature(e.temperature).toStringAsFixed(1)}°${_weatherCubit.unit == 'metric' ? 'C' : 'F'}',
+                                        );
+                                      },
+                                    ).toList()
+                                  ],
+                                ),
+                              if (state is WeatherLoaded) ...[
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Divider(
+                                  color: Colors.grey,
+                                ),
+                                SunPathWidget(weatherData: state.weatherData),
+                              ],
+                              if (state is WeatherLoaded) ...[
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                AdditionalDetailsWidget(
+                                    weatherData: state.weatherData),
+                              ],
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ],
-              ),
               KHeader(scaffoldKey: _scaffoldKey),
             ],
           );
