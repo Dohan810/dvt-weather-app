@@ -19,38 +19,47 @@ To set up the project, ensure that the versions of Flutter and Dart are as menti
 ## Project Structure
 
 ```Project Structure
-lib
-└── src
-    ├── api
-    │   ├── api.dart
-    │   ├── api_keys.dart
-    ├── constants
-    │   └── app_colors.dart
+<lib>
+└── lib
+    ├── core
+    │   ├── api
+    │   │   ├── location_api.dart
+    │   │   └── weather_api.dart
+    │   ├── base
+    │   │   ├── service_locator.dart
+    │   │   └── theme.dart
+    │   ├── cubit
+    │   │   ├── weather_cubit.dart
+    │   │   └── weather_state.dart
+    │   ├── database
+    │   │   └── database_helper.dart
+    │   └── models
+    │       ├── forecast_model.dart
+    │       └── weather_model.dart
     ├── features
-    │   ├── models
-    │   │   ├── forecast_data.dart
-    │   │   └── weather_data.dart
+    │   ├── onboarding
+    │   │   └── coin_screen.dart
     │   └── weather
-    │       ├── application
-    │       │   ├── layout_provider.dart
-    │       │   └── providers.dart
-    │       ├── data
-    │       │   ├── api_exception.dart
-    │       │   └── weather_repository.dart
-    │       ├── enums
-    │       │   ├── forecast_enum.dart
-    │       │   └── unit_enums.dart
-    │       ├── presentation
-    │       │   └── views
-    │       │       ├── weather_desktop.dart
-    │       │       ├── weather_mobile.dart
-    │       │       ├── weather_tablet.dart
-    │       │       └── weather_page.dart
-    │       └── widgets
-    ├── utils
-    │   ├── date_utils.dart
-    │   └── formatting_utils.dart
-    └── main.dart
+    │       ├── weather_detective.dart
+    │       └── weather_report.dart
+    ├── shared
+    │   ├── utils
+    │   │   ├── color_extensions.dart
+    │   │   ├── message_utils.dart
+    │   │   └── permissions_utils.dart
+    │   └── widgets
+    │       ├── additional_details_widget.dart
+    │       ├── k_button.dart
+    │       ├── k_drawer.dart
+    │       ├── k_header.dart
+    │       ├── k_option.dart
+    │       ├── k_row_options.dart
+    │       ├── sun_path_widget.dart
+    │       └── weather_report_card.dart
+    └── splash_screen.dart
+    ├── loading_screen.dart
+    ├── main.dart
+</lib>
    ```
 
 ## How to Start the Project

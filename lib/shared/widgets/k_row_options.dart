@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils/color_extensions.dart';
 
 enum LayoutType { row, column }
 
@@ -10,12 +9,12 @@ class KRowOptions extends StatelessWidget {
   final String hexColor;
 
   const KRowOptions({
-    Key? key,
+    super.key,
     required this.title,
     required this.layoutType,
     required this.children,
     this.hexColor = '#E0E0E0',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

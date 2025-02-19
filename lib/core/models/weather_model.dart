@@ -56,7 +56,7 @@ class WeatherModel {
       icon: json['weather'][0]['icon'],
       windSpeed: json['wind']['speed'].toDouble(),
       windDeg: json['wind']['deg'],
-      windGust: json['wind']['gust']?.toDouble() ?? null,
+      windGust: json['wind']['gust']?.toDouble(),
       clouds: json['clouds']['all'],
       visibility: json['visibility'],
       dt: json['dt'] ?? 0,

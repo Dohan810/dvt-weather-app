@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_wise/core/base/service_locator.dart';
-import 'package:weather_wise/features/weather/weather_report.dart';
 import 'package:intl/intl.dart';
+import 'package:weather_wise/features/weather/weather_report.func.dart';
 import '../../../core/cubit/weather_cubit.dart';
 
 class WeatherReportCard extends StatelessWidget {
   final GlobalKey cardKey;
 
-  const WeatherReportCard({Key? key, required this.cardKey}) : super(key: key);
+  const WeatherReportCard({super.key, required this.cardKey});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class WeatherReportCard extends StatelessWidget {
                 child: Card(
                   color: Colors.white,
                   margin: const EdgeInsets.all(32.0),
-                  child: Container(
+                  child: SizedBox(
                     height: 350,
                     width: MediaQuery.sizeOf(context).width,
                     child: Stack(
@@ -58,7 +58,7 @@ class WeatherReportCard extends StatelessWidget {
                           right: 10,
                           child: Text(
                             DateFormat('hh:mm a').format(DateTime.now()),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.normal,
                               color: Colors.grey,
@@ -69,11 +69,11 @@ class WeatherReportCard extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Container(
+                              SizedBox(
                                 height: 80,
                                 child: Text(
                                   '${_convertTemperature(state.weatherData.temperature).toStringAsFixed(1)}°${weatherCubit.unit == 'metric' ? 'C' : 'F'}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 64,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
@@ -83,7 +83,7 @@ class WeatherReportCard extends StatelessWidget {
                               ),
                               Text(
                                 state.weatherData.main,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.normal,
                                   color: Colors.black,
@@ -99,7 +99,7 @@ class WeatherReportCard extends StatelessWidget {
                           left: 10,
                           child: Text(
                             DateFormat('dd MMMM yyyy').format(DateTime.now()),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.normal,
                               color: Colors.grey,
@@ -114,7 +114,7 @@ class WeatherReportCard extends StatelessWidget {
               ),
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),

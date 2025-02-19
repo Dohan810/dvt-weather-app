@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import 'package:weather_wise/main.dart';
 import 'package:provider/provider.dart';
@@ -10,13 +12,13 @@ class KOption extends StatelessWidget {
   final VoidCallback? onRightIconPress;
 
   const KOption({
-    Key? key,
+    super.key,
     required this.text,
     required this.isSelected,
     required this.onTap,
     this.rightIcon,
     this.onRightIconPress,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

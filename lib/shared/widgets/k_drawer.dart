@@ -1,9 +1,11 @@
+// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:weather_wise/core/api/weather_api.dart';
 import 'package:weather_wise/main.dart';
+import 'package:weather_wise/shared/utils/k_print.dart';
 import 'package:weather_wise/shared/utils/permissions_utils.dart';
 import 'package:weather_wise/shared/utils/message_utils.dart';
 import 'dart:ui' as ui;
@@ -11,6 +13,7 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:weather_wise/shared/widgets/k_add_space.dart';
 import 'weather_report_card.dart';
 import 'k_option.dart';
 import 'k_row_options.dart';
@@ -21,7 +24,7 @@ import 'package:weather_wise/core/base/service_locator.dart';
 import 'package:weather_wise/core/api/location_api.dart';
 
 class KDrawer extends StatefulWidget {
-  const KDrawer({Key? key}) : super(key: key);
+  const KDrawer({super.key});
 
   @override
   _KDrawerState createState() => _KDrawerState();
@@ -60,7 +63,6 @@ class _KDrawerState extends State<KDrawer> {
     final latLon = await _locationApi
         .getLatLonFromDisplayName(_weatherCubit.selectedLocation);
     _weatherCubit.fetchWeather(latLon['lat']!, latLon['lon']!);
-
   }
 
   Future<void> _loadSavedLocations() async {
@@ -116,7 +118,7 @@ class _KDrawerState extends State<KDrawer> {
 
       Share.shareXFiles([XFile(file.path)], text: 'Check out the weather!');
     } catch (e) {
-      print(e.toString());
+      KPrint.debug(e.toString());
     }
   }
 
@@ -129,6 +131,9 @@ class _KDrawerState extends State<KDrawer> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+
+    if (!PermissionsUtils.isLocationEnabled) return const Drawer();
+
     return Drawer(
       backgroundColor:
           themeNotifier.isDarkMode ? Colors.grey[850] : Colors.white,
@@ -154,20 +159,20 @@ class _KDrawerState extends State<KDrawer> {
                         color: themeNotifier.isDarkMode
                             ? Colors.black
                             : Colors.blueGrey,
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
                               ),
                             ),
                             Text(
                               quote,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
                               ),
@@ -188,7 +193,7 @@ class _KDrawerState extends State<KDrawer> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const KAddSpace(multiplier: 2),
                           Expanded(
                             child: KOption(
                               text: 'Dark',
@@ -215,7 +220,7 @@ class _KDrawerState extends State<KDrawer> {
                           ..._savedLocations.map((location) {
                             return Column(
                               children: [
-                                SizedBox(height: 8),
+                                const KAddSpace(multiplier: 2),
                                 KOption(
                                   text: location['display_name'],
                                   isSelected: _weatherCubit.selectedLocation ==
@@ -231,7 +236,7 @@ class _KDrawerState extends State<KDrawer> {
                                 ),
                               ],
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                       KRowOptions(
@@ -247,7 +252,7 @@ class _KDrawerState extends State<KDrawer> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const KAddSpace(multiplier: 2),
                           Expanded(
                             child: KOption(
                               text: '°F',
@@ -273,7 +278,7 @@ class _KDrawerState extends State<KDrawer> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const KAddSpace(multiplier: 2),
                           Expanded(
                             child: KOption(
                               text: 'Sea Scene',
@@ -286,10 +291,10 @@ class _KDrawerState extends State<KDrawer> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const KAddSpace(multiplier: 4),
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -299,7 +304,7 @@ class _KDrawerState extends State<KDrawer> {
                               onPressAsync: _shareWeather,
                               rightIcon: Icons.wechat,
                             ),
-                            const SizedBox(height: 16),
+                            const KAddSpace(multiplier: 4),
                             KButton(
                               mainAxisSize: MainAxisSize.max,
                               text: 'Weather Detective',
@@ -315,7 +320,7 @@ class _KDrawerState extends State<KDrawer> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const KAddSpace(multiplier: 4),
             ],
           ),
         ],

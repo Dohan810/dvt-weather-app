@@ -1,6 +1,9 @@
+// ignore_for_file: avoid_unnecessary_containers
+
 import 'package:flutter/material.dart';
-import 'package:weather_wise/shared/utils/color_extensions.dart';
 import 'dart:math';
+
+import 'package:weather_wise/shared/widgets/k_add_space.dart';
 
 class WeatherDetectiveScreen extends StatefulWidget {
   const WeatherDetectiveScreen({super.key});
@@ -54,9 +57,9 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
               left: MediaQuery.sizeOf(context).width / 1.5,
               top: -0,
               child: Opacity(
-                opacity:0.6,
+                opacity: 0.6,
                 child: Text(
-                  percentage > 0 ? "${percentage}%" : "Weather",
+                  percentage > 0 ? "$percentage%" : "Weather",
                   style: TextStyle(
                       fontSize: 68,
                       fontWeight: FontWeight.bold,
@@ -92,16 +95,16 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back_ios_rounded,
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const KAddSpace(multiplier: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        child: Text(
+                        child: const Text(
                           "Weather\nDetective",
                           style: TextStyle(fontSize: 40, height: 1.1),
                         ),
@@ -111,7 +114,7 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
                         child: Center(
                           child: Text(
                             '$_score / $_totalAttempts',
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           ),
                         ),
                       ),
@@ -122,16 +125,16 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             "What's the weather?",
                             style: TextStyle(fontSize: 24),
                           ),
-                          SizedBox(height: 16),
+                          const KAddSpace(multiplier: 4),
                           Container(
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(500)),
+                                  const BorderRadius.all(Radius.circular(500)),
                               color: Theme.of(context).canvasColor,
                             ),
                             child: Icon(
@@ -143,22 +146,22 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const KAddSpace(multiplier: 4),
                   Row(
                     children: [
                       _buildWeatherOption(_displayOptions[0]),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                         width: 16,
                       ),
                       _buildWeatherOption(_displayOptions[1]),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const KAddSpace(multiplier: 4),
                   Row(
                     children: [
                       _buildWeatherOption(_displayOptions[2]),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                         width: 16,
                       ),
@@ -180,7 +183,7 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
       child: InkWell(
         onTap: () => _handleOptionTap(option),
         child: Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).canvasColor,
             borderRadius: BorderRadius.circular(8),
@@ -190,8 +193,8 @@ class _WeatherDetectiveScreenState extends State<WeatherDetectiveScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(option['icon'], size: 40),
-              SizedBox(height: 8),
-              Text(option['label'], style: TextStyle(fontSize: 18)),
+              const KAddSpace(multiplier: 2),
+              Text(option['label'], style: const TextStyle(fontSize: 18)),
             ],
           ),
         ),

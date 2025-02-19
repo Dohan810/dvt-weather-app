@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:weather_wise/shared/utils/color_extensions.dart';
@@ -33,7 +35,9 @@ class _SplashScreenState extends State<SplashScreen> {
     if (coinPageViewed) {
       Navigator.pushReplacementNamed(context, '/report');
     } else {
+      Future.delayed(const Duration(seconds: 5), () {
       Navigator.pushReplacementNamed(context, '/coin');
+      });
     }
   }
 
@@ -52,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
           if (_controller.value.isInitialized)
             Positioned(
               bottom: 0,
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.sizeOf(context).height * 0.5,
                 child: FittedBox(
                   fit: BoxFit.cover,
@@ -64,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-          Positioned(
+          const Positioned(
             top: -20,
             left: -20,
             child: Text(
@@ -76,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
           ),
-          Positioned(
+          const Positioned(
             top: 80,
             right: -10,
             child: Text(
@@ -92,10 +96,10 @@ class _SplashScreenState extends State<SplashScreen> {
             top: MediaQuery.sizeOf(context).height * 0.2,
             left: 20,
             right: 20,
-            child: Column(
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 Text(
                   'Weather',
                   style: TextStyle(

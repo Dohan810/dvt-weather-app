@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:weather_wise/shared/utils/color_extensions.dart';
 import 'package:weather_wise/core/database/database_helper.dart';
+import 'package:weather_wise/shared/widgets/k_add_space.dart';
 
 class CoinScreen extends StatefulWidget {
   const CoinScreen({super.key});
@@ -67,7 +70,7 @@ class _CoinScreenState extends State<CoinScreen>
           if (_controller.value.isInitialized)
             Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: FittedBox(
@@ -80,13 +83,13 @@ class _CoinScreenState extends State<CoinScreen>
                 ),
               ),
             ),
-          Align(
+          const Align(
             alignment: Alignment.topCenter,
             child: Padding(
-              padding: const EdgeInsets.only(top: 50),
+              padding: EdgeInsets.only(top: 50),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     'Thank You DVT',
                     style: TextStyle(
@@ -94,7 +97,7 @@ class _CoinScreenState extends State<CoinScreen>
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 16),
+                  KAddSpace(multiplier: 4),
                   Text(
                     'They gave you a free coin to use the app for LIFE!',
                     style: TextStyle(
@@ -102,7 +105,7 @@ class _CoinScreenState extends State<CoinScreen>
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 40),
+                  KAddSpace(multiplier: 10),
                 ],
               ),
             ),

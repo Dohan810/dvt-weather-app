@@ -1,14 +1,17 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:weather_wise/core/api/location_api.dart';
 import 'package:weather_wise/core/cubit/weather_cubit.dart';
 import 'dart:async';
 
 import 'package:weather_wise/core/base/service_locator.dart';
+import 'package:weather_wise/shared/utils/k_print.dart';
 
 class KHeader extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const KHeader({Key? key, required this.scaffoldKey}) : super(key: key);
+  const KHeader({super.key, required this.scaffoldKey});
 
   @override
   _KHeaderState createState() => _KHeaderState();
@@ -46,7 +49,7 @@ class _KHeaderState extends State<KHeader> {
 
   void _onSuggestionTap(Map<String, dynamic> suggestion) async {
     // Handle location selection
-    print('Selected location: ${suggestion['display_name']}');
+    KPrint.debug('Selected location: ${suggestion['display_name']}');
     setState(() {
       _isSearchOpen = false;
       _searchController.clear();
@@ -89,7 +92,7 @@ class _KHeaderState extends State<KHeader> {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -112,7 +115,7 @@ class _KHeaderState extends State<KHeader> {
               ),
               AnimatedContainer(
                 alignment: Alignment.centerRight,
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 width:
                     _isSearchOpen ? MediaQuery.of(context).size.width * 0.6 : 0,
                 curve: Curves.easeInOut,
@@ -126,7 +129,7 @@ class _KHeaderState extends State<KHeader> {
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Type Location',
                           border: InputBorder.none,
                           contentPadding:
@@ -167,7 +170,7 @@ class _KHeaderState extends State<KHeader> {
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
                       blurRadius: 10,
-                      offset: Offset(0, 5),
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
@@ -181,14 +184,14 @@ class _KHeaderState extends State<KHeader> {
                               width: 140,
                               height: 140,
                             ),
-                            Text(
+                            const Text(
                               "Whoops, no results",
                               style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 16,
                             )
                           ],
@@ -221,7 +224,7 @@ class _KHeaderState extends State<KHeader> {
                                     //   value: 'set_active',
                                     //   child: Text('Set Active Location'),
                                     // ),
-                                    PopupMenuItem(
+                                    const PopupMenuItem(
                                       value: 'save',
                                       child: Text('Save Location'),
                                     ),

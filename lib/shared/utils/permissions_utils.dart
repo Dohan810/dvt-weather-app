@@ -1,31 +1,63 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:geolocator/geolocator.dart';
 
 class PermissionsUtils {
+  static bool _isLocationEnabled = false;
+  static Position? _lastKnownLocation;
+
+  static bool get isLocationEnabled => _isLocationEnabled;
+  static Position? get lastKnownLocation => _lastKnownLocation;
+
+  static Future<bool> checkLocationStatus() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    LocationPermission permission = await Geolocator.checkPermission();
+    
+    _isLocationEnabled = serviceEnabled && 
+        permission != LocationPermission.denied && 
+        permission != LocationPermission.deniedForever;
+    
+    if (_isLocationEnabled) {
+      _lastKnownLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 5),
+      );
+    }
+    
+    return _isLocationEnabled;
+  }
+
   static Future<Position?> getCurrentLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        throw Exception('Location services are disabled.');
+        _isLocationEnabled = false;
+        return null;
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied.');
+          _isLocationEnabled = false;
+          return null;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw Exception('Location permissions are permanently denied.');
+        _isLocationEnabled = false;
+        return null;
       }
 
-      return await Geolocator.getCurrentPosition(
+      _isLocationEnabled = true;
+      _lastKnownLocation = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 5),
+        timeLimit: const Duration(seconds: 5),
       );
+      return _lastKnownLocation;
     } catch (e) {
-      throw Exception('Could not get location: $e');
+      _isLocationEnabled = false;
+      return null;
     }
   }
 }

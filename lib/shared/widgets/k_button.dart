@@ -1,7 +1,7 @@
+// ignore_for_file: must_be_immutable, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
-import 'package:weather_wise/main.dart';
-import 'package:weather_wise/shared/utils/color_extensions.dart';
-import 'package:provider/provider.dart';
+import 'package:weather_wise/shared/widgets/k_add_space.dart';
 
 class KButton extends StatefulWidget {
   final String text;
@@ -11,13 +11,13 @@ class KButton extends StatefulWidget {
   MainAxisSize mainAxisSize = MainAxisSize.min;
 
   KButton({
-    Key? key,
+    super.key,
     required this.text,
     this.onPressed,
     this.onPressAsync,
     this.rightIcon,
     this.mainAxisSize = MainAxisSize.min,
-  }) : super(key: key);
+  });
 
   @override
   _KButtonState createState() => _KButtonState();
@@ -31,7 +31,7 @@ class _KButtonState extends State<KButton> {
     return InkWell(
       onTap: widget.onPressed ?? _handleAsyncPress,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: Theme.of(context).canvasColor,
           borderRadius: BorderRadius.circular(8),
@@ -54,7 +54,7 @@ class _KButtonState extends State<KButton> {
                     ),
               ),
             if (widget.rightIcon != null && !_isLoading) ...[
-              SizedBox(width: 8),
+              const KAddSpace(multiplier: 2),
               Icon(widget.rightIcon, color: Theme.of(context).colorScheme.primary),
             ],
           ],

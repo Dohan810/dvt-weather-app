@@ -1,8 +1,12 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:geolocator/geolocator.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:weather_wise/shared/utils/k_print.dart';
+import 'package:weather_wise/shared/utils/permissions_utils.dart';
 
 class LocationApi {
   static const String _baseUrl =
@@ -23,7 +27,7 @@ class LocationApi {
         throw Exception('Failed to load location suggestions');
       }
     } catch (e) {
-      print('Error fetching location suggestions: $e');
+      KPrint.debug('Error fetching location suggestions: $e');
       return [];
     } finally {
       client.close();
@@ -53,10 +57,10 @@ class LocationApi {
   Future<Map<String, double>> getLatLonFromDisplayName(
       String displayName) async {
     if (displayName == "Current Location") {
-      Position? l = await Geolocator.getLastKnownPosition();
+      Position? l = await PermissionsUtils.getCurrentLocation();
       return {
         'lat': l!.latitude,
-        'lon': l!.longitude,
+        'lon': l.longitude,
       };
     }
 

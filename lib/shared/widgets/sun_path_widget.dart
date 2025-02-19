@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:weather_wise/features/weather/weather_report.dart';
+import 'package:weather_wise/features/weather/weather_report.func.dart';
 import '../../core/models/weather_model.dart';
 
 class SunPathWidget extends StatelessWidget {
   final WeatherModel weatherData;
 
-  const SunPathWidget({Key? key, required this.weatherData}) : super(key: key);
+  const SunPathWidget({super.key, required this.weatherData});
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,8 @@ class SunPathWidget extends StatelessWidget {
             top: 16,
             child: Column(
               children: [
-                Text('Sun Rise', style: TextStyle(color: Colors.white)),
-                Text(DateFormat('hh:mm a').format(sunriseTime), style: TextStyle(color: Colors.white)),
+                const Text('Sun Rise', style: TextStyle(color: Colors.white)),
+                Text(DateFormat('hh:mm a').format(sunriseTime), style: const TextStyle(color: Colors.white)),
               ],
             ),
           ),
@@ -41,13 +41,13 @@ class SunPathWidget extends StatelessWidget {
             top: 16,
             child: Column(
               children: [
-                Text('Sun Set', style: TextStyle(color: Colors.white)),
-                Text(DateFormat('hh:mm a').format(sunsetTime), style: TextStyle(color: Colors.white)),
+                const Text('Sun Set', style: TextStyle(color: Colors.white)),
+                Text(DateFormat('hh:mm a').format(sunsetTime), style: const TextStyle(color: Colors.white)),
               ],
             ),
           ),
           CustomPaint(
-            size: Size(double.infinity, 200),
+            size: const Size(double.infinity, 200),
             painter: SunPathPainter(sunPosition, isNight),
           ),
         ],

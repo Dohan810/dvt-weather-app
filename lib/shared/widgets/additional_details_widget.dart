@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:weather_wise/features/weather/weather_report.dart';
+import 'package:weather_wise/features/weather/weather_report.func.dart';
+import 'package:weather_wise/shared/widgets/k_add_space.dart';
 import '../../core/models/weather_model.dart';
 
 class AdditionalDetailsWidget extends StatelessWidget {
   final WeatherModel weatherData;
 
-  const AdditionalDetailsWidget({Key? key, required this.weatherData}) : super(key: key);
+  const AdditionalDetailsWidget({super.key, required this.weatherData});
 
   @override
   Widget build(BuildContext context) {
@@ -18,49 +19,56 @@ class AdditionalDetailsWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Additional Details',
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
+          const KAddSpace(multiplier: 4),
           Row(
             children: [
               Expanded(
                 flex: 1,
-                child: _buildDetailTile('Wind', '${weatherData.windSpeed} km/h', Icons.air),
+                child: _buildDetailTile(
+                    'Wind', '${weatherData.windSpeed} km/h', Icons.air),
               ),
-              const SizedBox(width: 8),
+              const KAddSpace(multiplier: 2),
               Expanded(
                 flex: 2,
-                child: _buildDetailTile('Cloud Cover', '${weatherData.clouds}%', Icons.cloud),
+                child: _buildDetailTile(
+                    'Cloud Cover', '${weatherData.clouds}%', Icons.cloud),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+              const KAddSpace(multiplier: 2),
           Row(
             children: [
               Expanded(
                 flex: 2,
-                child: _buildDetailTile('Gusts', '${weatherData.windGust} km/h', Icons.air),
+                child: _buildDetailTile(
+                    'Gusts', '${weatherData.windGust} km/h', Icons.air),
               ),
-              const SizedBox(width: 8),
+              const KAddSpace(multiplier: 2),
               Expanded(
                 flex: 1,
-                child: _buildDetailTile('Humidity', '${weatherData.humidity}%', Icons.water_drop),
+                child: _buildDetailTile(
+                    'Humidity', '${weatherData.humidity}%', Icons.water_drop),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+              const KAddSpace(multiplier: 2),
           Row(
             children: [
               Expanded(
                 flex: 1,
-                child: _buildDetailTile('Pressure', '${weatherData.pressure} hPa', Icons.speed),
+                child: _buildDetailTile(
+                    'Pressure', '${weatherData.pressure} hPa', Icons.speed),
               ),
-              const SizedBox(width: 8),
+              const KAddSpace(multiplier: 2),
               Expanded(
                 flex: 2,
-                child: _buildDetailTile('Visibility', '${weatherData.visibility / 1000} km', Icons.visibility),
+                child: _buildDetailTile('Visibility',
+                    '${weatherData.visibility / 1000} km', Icons.visibility),
               ),
             ],
           ),
@@ -83,17 +91,20 @@ class AdditionalDetailsWidget extends StatelessWidget {
           Row(
             children: [
               Icon(icon, color: Colors.white, size: 16),
-              const SizedBox(width: 4),
+              const KAddSpace(multiplier: 1),
               Text(
                 title,
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const KAddSpace(multiplier: 2),
           Text(
             value,
-            style: TextStyle(color: Colors.white, fontSize: 12),
+            style: const TextStyle(color: Colors.white, fontSize: 12),
           ),
         ],
       ),

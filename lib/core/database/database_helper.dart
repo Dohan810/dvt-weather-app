@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, unused_local_variable
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -49,7 +51,6 @@ class DatabaseHelper {
     );
 
     String? test = await getUnit();
-    print('Saved unit: $unit, Retrieved unit: $test');
   }
 
   Future<String?> getUnit() async {

@@ -23,15 +23,15 @@ const Color lightCanvasColor = Color(0xFFF3F6F9);
 
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  colorScheme: ColorScheme.light(
+  colorScheme: const ColorScheme.light(
     primary: lightPrimaryColor,
     secondary: lightSecondaryColor,
   ),
   scaffoldBackgroundColor: lightScaffoldBackgroundColor,
   cardColor: lightCardColor,
   canvasColor: lightCanvasColor ,
-  buttonTheme: ButtonThemeData(buttonColor: lightButtonColor),
-  textTheme: TextTheme(
+  buttonTheme: const ButtonThemeData(buttonColor: lightButtonColor),
+  textTheme: const TextTheme(
     // Display
     displayLarge: TextStyle(color: lightPrimaryColor, fontWeight: FontWeight.bold, fontSize: 34),
     displayMedium: TextStyle(color: lightPrimaryColor, fontWeight: FontWeight.bold, fontSize: 30),
@@ -61,15 +61,15 @@ final ThemeData lightTheme = ThemeData(
 
 final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
-  colorScheme: ColorScheme.dark(
+  colorScheme: const ColorScheme.dark(
     primary: darkPrimaryColor,
     secondary: darkSecondaryColor,
   ),
   scaffoldBackgroundColor: darkScaffoldBackgroundColor,
   cardColor: darkCardColor,
   canvasColor: darkCanvasColor,
-  buttonTheme: ButtonThemeData(buttonColor: darkButtonColor),
-  textTheme: TextTheme(
+  buttonTheme: const ButtonThemeData(buttonColor: darkButtonColor),
+  textTheme: const TextTheme(
     // Display
     displayLarge: TextStyle(color: darkSecondaryColor, fontWeight: FontWeight.bold, fontSize: 34),
     displayMedium: TextStyle(color: darkSecondaryColor, fontWeight: FontWeight.bold, fontSize: 30),
