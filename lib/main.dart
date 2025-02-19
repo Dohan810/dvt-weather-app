@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_wise/coin_screen.dart';
-import 'package:weather_wise/features/weather_detective.dart';
-import 'package:weather_wise/shared/weather_report_card.dart';
+import 'package:weather_wise/features/onboarding/coin_screen.dart';
+import 'package:weather_wise/features/weather/weather_detective.dart';
+import 'package:weather_wise/shared/widgets/weather_report_card.dart';
 import 'package:weather_wise/splash_screen.dart';
-import 'package:weather_wise/weather_report.dart';
-import 'core/service_locator.dart';
-import 'theme.dart';
+import 'package:weather_wise/features/weather/weather_report.dart';
+import 'core/base/service_locator.dart';
+import 'core/base/theme.dart';
 
 void main() {
   setupLocator();

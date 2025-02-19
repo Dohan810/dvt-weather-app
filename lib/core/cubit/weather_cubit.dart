@@ -48,6 +48,5 @@ class WeatherCubit extends Cubit<WeatherState> {
 
   void changeTheme(String theme) {
     selectedTheme = theme;
-    // emit(WeatherThemeChanged(theme));
   }
 }

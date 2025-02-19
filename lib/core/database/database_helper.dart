@@ -21,7 +21,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'weather_app.db');
     return await openDatabase(
       path,
-      version: 3, // Increment the version to trigger onUpgrade
+      version: 3, 
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE settings (
@@ -36,24 +36,6 @@ class DatabaseHelper {
             display_name TEXT
           )
         ''');
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 3) {
-          await db.execute('''
-            ALTER TABLE settings ADD COLUMN key TEXT
-          ''');
-          await db.execute('''
-            ALTER TABLE settings ADD COLUMN value TEXT
-          ''');
-        }
-        if (oldVersion < 2) {
-          await db.execute('''
-            CREATE TABLE IF NOT EXISTS locations (
-              id INTEGER PRIMARY KEY,
-              display_name TEXT
-            )
-          ''');
-        }
       },
     );
   }
